@@ -7,7 +7,9 @@ from typing import Any
 from .events import Event, EventBus
 from .index import NeighborIndex
 from .models import Cog, CogGraph, Component, LineageOperation, ScoreEntry, ScoreSet, Snapshot
+from .presets import build_weighted_strategy_from_preset, list_weighted_strategy_presets
 from .policy import PathPolicy
+from .plugins import load_feature_techniques
 from .scoring import (
     AlphabetPolarBreadthTechnique,
     FeatureTechnique,
@@ -26,7 +28,7 @@ class CogSystem:
         self.score_sets: dict[str, ScoreSet] = {}
         self.strategies: dict[str, SimilarityStrategy] = {}
         self.feature_techniques: dict[str, FeatureTechnique] = {}
-        self.default_feature_techniques: dict[str, str] = {}
+        self.default_feature_techniques: dict[str, dict[str, str]] = {}
         self.graph_policies: dict[str, PathPolicy] = {}
         self._neighbor_indexes: dict[tuple[str, str], NeighborIndex] = {}
         self.lineage: list[LineageOperation] = []
@@ -36,37 +38,84 @@ class CogSystem:
     def register_strategy(self, strategy: SimilarityStrategy) -> None:
         self.strategies[strategy.id] = strategy
 
+    def available_strategy_presets(self) -> dict[str, str]:
+        return list_weighted_strategy_presets()
+
+    def register_weighted_strategy_preset(
+        self,
+        preset_id: str,
+        strategy_id: str | None = None,
+        **overrides: Any,
+    ) -> SimilarityStrategy:
+        strategy = build_weighted_strategy_from_preset(
+            preset_id=preset_id,
+            strategy_id=strategy_id,
+            **overrides,
+        )
+        self.register_strategy(strategy)
+        return strategy
+
     def register_feature_technique(self, technique: FeatureTechnique, use_as_default: bool = True) -> None:
         self.feature_techniques[technique.id] = technique
         if use_as_default:
-            self.default_feature_techniques[technique.feature_name] = technique.id
+            self.default_feature_techniques.setdefault(technique.namespace, {})[
+                technique.feature_name
+            ] = technique.id
 
     def register_default_word_feature_techniques(self) -> None:
         self.register_feature_technique(AlphabetPolarBreadthTechnique())
         self.register_feature_technique(LetterDepthTechnique())
         self.register_feature_technique(LetterVolumeTechnique())
 
+    def load_feature_plugin(self, module_name_or_path: str, use_as_default: bool = False) -> list[str]:
+        techniques = load_feature_techniques(module_name_or_path)
+        ids: list[str] = []
+        for technique in techniques:
+            self.register_feature_technique(technique, use_as_default=use_as_default)
+            ids.append(technique.id)
+        return ids
+
     def recompute_cog_features(self, cog_id: str) -> Cog:
         cog = self.cogs[cog_id]
-        technique_map = dict(cog.scoring.feature_techniques)
-        for feature_name, technique_id in self.default_feature_techniques.items():
-            technique_map.setdefault(feature_name, technique_id)
+        technique_map = self._normalize_feature_techniques(cog.scoring.feature_techniques)
+        for namespace, defaults in self.default_feature_techniques.items():
+            namespace_map = technique_map.setdefault(namespace, {})
+            for feature_name, technique_id in defaults.items():
+                namespace_map.setdefault(feature_name, technique_id)
 
-        for feature_name, technique_id in technique_map.items():
-            technique = self.feature_techniques.get(technique_id)
-            if technique is None:
-                raise ValueError(f"Unknown feature technique: {technique_id}")
-            value = float(technique.calculate(cog))
-            cog.scoring.feature_values[feature_name] = value
-            cog.features[feature_name] = value
-            if feature_name == "breadth":
-                cog.breadth = value
-            elif feature_name == "depth":
-                cog.depth = value
-            elif feature_name == "volume":
-                cog.volume = value
+        previous_derived = set(cog.scoring.metadata.get("derived_feature_keys", []))
+        for key in previous_derived:
+            cog.features.pop(key, None)
+
+        feature_values: dict[str, dict[str, float]] = {}
+        derived_keys: set[str] = set()
+        for namespace, feature_map in technique_map.items():
+            ns_values: dict[str, float] = {}
+            for feature_name, technique_id in feature_map.items():
+                technique = self.feature_techniques.get(technique_id)
+                if technique is None:
+                    raise ValueError(f"Unknown feature technique: {technique_id}")
+                value = float(technique.calculate(cog))
+                ns_values[feature_name] = value
+                namespaced_key = f"{namespace}.{feature_name}"
+                cog.features[namespaced_key] = value
+                derived_keys.add(namespaced_key)
+
+                if namespace == "core":
+                    cog.features[feature_name] = value
+                    derived_keys.add(feature_name)
+                    if feature_name == "breadth":
+                        cog.breadth = value
+                    elif feature_name == "depth":
+                        cog.depth = value
+                    elif feature_name == "volume":
+                        cog.volume = value
+
+            feature_values[namespace] = ns_values
 
         cog.scoring.feature_techniques = technique_map
+        cog.scoring.feature_values = feature_values
+        cog.scoring.metadata["derived_feature_keys"] = sorted(derived_keys)
         cog.scoring.version += 1
         return cog
 
@@ -290,3 +339,19 @@ class CogSystem:
             if neighbor.to_cog_id == to_cog_id:
                 return neighbor.score
         return float("-inf")
+
+    @staticmethod
+    def _normalize_feature_techniques(
+        raw: dict[str, dict[str, str]] | dict[str, str]
+    ) -> dict[str, dict[str, str]]:
+        if not raw:
+            return {}
+        values = list(raw.values())
+        if values and all(isinstance(item, str) for item in values):
+            return {"core": {feature: technique for feature, technique in raw.items()}}  # type: ignore[arg-type]
+        normalized: dict[str, dict[str, str]] = {}
+        for namespace, feature_map in raw.items():
+            if not isinstance(feature_map, dict):
+                raise ValueError("feature_techniques must map namespace -> {feature: technique_id}")
+            normalized[namespace] = {feature: str(technique_id) for feature, technique_id in feature_map.items()}
+        return normalized

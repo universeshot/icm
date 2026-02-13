@@ -12,6 +12,7 @@ def _letters_only(text: str) -> list[str]:
 
 class FeatureTechnique(Protocol):
     id: str
+    namespace: str
     feature_name: str
 
     def calculate(self, cog: Cog) -> float:
@@ -21,6 +22,7 @@ class FeatureTechnique(Protocol):
 @dataclass
 class CallableFeatureTechnique:
     id: str
+    namespace: str
     feature_name: str
     calculator: Callable[[Cog], float]
 
@@ -31,6 +33,7 @@ class CallableFeatureTechnique:
 @dataclass
 class AlphabetPolarBreadthTechnique:
     id: str = "alpha_polar_breadth"
+    namespace: str = "core"
     feature_name: str = "breadth"
 
     def calculate(self, cog: Cog) -> float:
@@ -46,6 +49,7 @@ class AlphabetPolarBreadthTechnique:
 @dataclass
 class LetterDepthTechnique:
     id: str = "letter_depth"
+    namespace: str = "core"
     feature_name: str = "depth"
 
     def calculate(self, cog: Cog) -> float:
@@ -62,6 +66,7 @@ class LetterDepthTechnique:
 @dataclass
 class LetterVolumeTechnique:
     id: str = "letter_volume"
+    namespace: str = "core"
     feature_name: str = "volume"
 
     def calculate(self, cog: Cog) -> float:

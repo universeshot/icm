@@ -36,8 +36,8 @@ class Cog:
 
 @dataclass
 class CogScoring:
-    feature_techniques: dict[str, str] = field(default_factory=dict)
-    feature_values: dict[str, float] = field(default_factory=dict)
+    feature_techniques: dict[str, dict[str, str]] = field(default_factory=dict)
+    feature_values: dict[str, dict[str, float]] = field(default_factory=dict)
     metadata: dict[str, Any] = field(default_factory=dict)
     version: int = 1
 

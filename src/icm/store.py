@@ -90,7 +90,10 @@ class JsonSnapshotStore:
                     "breadth": "float",
                     "depth": "float",
                     "volume": "float",
-                    "scoring": {"feature_techniques": {"feature": "technique_id"}, "feature_values": {}},
+                    "scoring": {
+                        "feature_techniques": {"namespace": {"feature": "technique_id"}},
+                        "feature_values": {"namespace": {"feature": "float"}},
+                    },
                 }
             },
             "components": {"component_id": {"id": "str", "kind": "str", "payload": "dict"}},
@@ -179,8 +182,14 @@ class JsonSnapshotStore:
             "features": dict(cog.features),
             "metadata": dict(cog.metadata),
             "scoring": {
-                "feature_techniques": dict(cog.scoring.feature_techniques),
-                "feature_values": dict(cog.scoring.feature_values),
+                "feature_techniques": {
+                    namespace: dict(feature_map)
+                    for namespace, feature_map in cog.scoring.feature_techniques.items()
+                },
+                "feature_values": {
+                    namespace: dict(feature_map)
+                    for namespace, feature_map in cog.scoring.feature_values.items()
+                },
                 "metadata": dict(cog.scoring.metadata),
                 "version": cog.scoring.version,
             },
@@ -194,9 +203,15 @@ class JsonSnapshotStore:
         volume = float(data.get("volume", 0.0))
 
         scoring_raw = data.get("scoring", {})
+        feature_techniques = JsonSnapshotStore._normalize_feature_techniques(
+            scoring_raw.get("feature_techniques", {})
+        )
+        feature_values = JsonSnapshotStore._normalize_feature_values(
+            scoring_raw.get("feature_values", {})
+        )
         scoring = CogScoring(
-            feature_techniques=dict(scoring_raw.get("feature_techniques", {})),
-            feature_values={k: float(v) for k, v in scoring_raw.get("feature_values", {}).items()},
+            feature_techniques=feature_techniques,
+            feature_values=feature_values,
             metadata=dict(scoring_raw.get("metadata", {})),
             version=int(scoring_raw.get("version", 1)),
         )
@@ -209,8 +224,49 @@ class JsonSnapshotStore:
             volume=volume,
             content=data.get("content", ""),
             component_ids=list(data.get("component_ids", [])),
-            features={k: float(v) for k, v in data.get("features", {}).items()},
+            features={k: JsonSnapshotStore._num_if_numeric(v) for k, v in data.get("features", {}).items()},
             metadata=dict(data.get("metadata", {})),
             scoring=scoring,
             version=int(data.get("version", 1)),
         )
+
+    @staticmethod
+    def _normalize_feature_techniques(raw: dict[str, Any]) -> dict[str, dict[str, str]]:
+        if not raw:
+            return {}
+        values = list(raw.values())
+        if values and all(isinstance(item, str) for item in values):
+            return {"core": {feature: str(technique_id) for feature, technique_id in raw.items()}}
+        normalized: dict[str, dict[str, str]] = {}
+        for namespace, feature_map in raw.items():
+            if not isinstance(feature_map, dict):
+                continue
+            normalized[namespace] = {
+                str(feature_name): str(technique_id)
+                for feature_name, technique_id in feature_map.items()
+            }
+        return normalized
+
+    @staticmethod
+    def _normalize_feature_values(raw: dict[str, Any]) -> dict[str, dict[str, float]]:
+        if not raw:
+            return {}
+        values = list(raw.values())
+        if values and all(isinstance(item, (int, float)) for item in values):
+            return {"core": {feature: float(value) for feature, value in raw.items()}}
+        normalized: dict[str, dict[str, float]] = {}
+        for namespace, feature_map in raw.items():
+            if not isinstance(feature_map, dict):
+                continue
+            normalized[namespace] = {
+                str(feature_name): float(value)
+                for feature_name, value in feature_map.items()
+                if isinstance(value, (int, float))
+            }
+        return normalized
+
+    @staticmethod
+    def _num_if_numeric(value: Any) -> Any:
+        if isinstance(value, (int, float)):
+            return float(value)
+        return value

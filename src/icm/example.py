@@ -6,14 +6,17 @@ from .models import Cog, CogGraph, CogScoring, Component
 from .policy import PathPolicy
 from .render import AsciiRenderer
 from .store import JsonSnapshotStore
-from .strategies import WeightedFeatureStrategy
 from .system import CogSystem
 
 
 def build_demo_system() -> CogSystem:
     system = CogSystem()
-    system.register_strategy(WeightedFeatureStrategy(id="X"))
+    system.register_weighted_strategy_preset(
+        preset_id="shape_aware_per_namespace",
+        strategy_id="X",
+    )
     system.register_default_word_feature_techniques()
+    system.load_feature_plugin("icm.sample_feature_plugin", use_as_default=False)
 
     system.add_component(Component(id="cA1", kind="rule"))
     system.add_component(Component(id="cA2", kind="data"))
@@ -32,9 +35,15 @@ def build_demo_system() -> CogSystem:
             features={"directional_bias": 0.10},
             scoring=CogScoring(
                 feature_techniques={
-                    "breadth": "alpha_polar_breadth",
-                    "depth": "letter_depth",
-                    "volume": "letter_volume",
+                    "core": {
+                        "breadth": "alpha_polar_breadth",
+                        "depth": "letter_depth",
+                        "volume": "letter_volume",
+                    },
+                    "shape": {
+                        "unique_letters": "shape_unique_letters",
+                        "vowel_ratio": "shape_vowel_ratio",
+                    },
                 }
             ),
         )
@@ -51,9 +60,15 @@ def build_demo_system() -> CogSystem:
             features={"directional_bias": 0.00},
             scoring=CogScoring(
                 feature_techniques={
-                    "breadth": "alpha_polar_breadth",
-                    "depth": "letter_depth",
-                    "volume": "letter_volume",
+                    "core": {
+                        "breadth": "alpha_polar_breadth",
+                        "depth": "letter_depth",
+                        "volume": "letter_volume",
+                    },
+                    "shape": {
+                        "unique_letters": "shape_unique_letters",
+                        "vowel_ratio": "shape_vowel_ratio",
+                    },
                 }
             ),
         )
@@ -70,9 +85,11 @@ def build_demo_system() -> CogSystem:
             features={"directional_bias": -0.05},
             scoring=CogScoring(
                 feature_techniques={
-                    "breadth": "alpha_polar_breadth",
-                    "depth": "letter_depth",
-                    "volume": "letter_volume",
+                    "core": {
+                        "breadth": "alpha_polar_breadth",
+                        "depth": "letter_depth",
+                        "volume": "letter_volume",
+                    },
                 }
             ),
         )

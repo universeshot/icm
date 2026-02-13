@@ -3,10 +3,12 @@
 Phase 1 focuses on:
 
 1. Extendable data structure (`Cog`, `Component`, `CogGraph`, `ScoreSet`).
-2. Pluggable per-cog feature scoring (`breadth`, `depth`, `volume`, and future features).
-3. Event/subscription-based score recomputation.
-4. Manual and automated iteration mechanics.
-5. ASCII rendering and JSON snapshot persistence.
+2. Namespace-aware per-cog feature scoring (`namespace -> feature -> technique/value`).
+3. Pluggable per-cog feature techniques (`breadth`, `depth`, `volume`, and future features).
+4. Namespace comparison toggles in similarity scoring.
+5. Event/subscription-based score recomputation.
+6. Manual and automated iteration mechanics.
+7. ASCII rendering and JSON snapshot persistence.
 
 Phase 1 intentionally does not implement automatic composition/decomposition yet.
 
@@ -16,6 +18,8 @@ Phase 1 intentionally does not implement automatic composition/decomposition yet
 - `src/icm/events.py`: event bus.
 - `src/icm/strategies.py`: pluggable similarity strategies.
 - `src/icm/scoring.py`: pluggable per-feature calculation techniques.
+- `src/icm/plugins.py`: simple plugin loader for feature techniques.
+- `src/icm/sample_feature_plugin.py`: example plugin module.
 - `src/icm/system.py`: orchestration, score-set lifecycle, policy binding.
 - `src/icm/index.py`: pre-sorted neighbor index for traversal.
 - `src/icm/policy.py`: deterministic path policy.
@@ -46,6 +50,59 @@ Automated:
 2. Cog update recomputes feature values from configured per-cog techniques.
 3. Score-set update invalidates cached neighbor indexes.
 4. If a graph is bound to a policy via `bind_graph_policy`, score updates auto-trigger graph reorder.
+
+## Namespace scoring toggles
+
+`WeightedFeatureStrategy` supports:
+
+1. `feature_namespace_mode`:
+   - `aggregate`: compare all selected features together.
+   - `per_namespace`: compute per-namespace scores, then aggregate namespaces.
+2. `namespace_presence_mode`:
+   - `common`: only namespaces that both cogs expose.
+   - `all`: union of namespaces, with missing features treated as zero.
+3. `feature_presence_mode`:
+   - `common`: only shared feature names within selected namespaces.
+   - `all`: union of feature names within selected namespaces.
+
+## Strategy presets
+
+Preset helpers are available for `WeightedFeatureStrategy`:
+
+1. `balanced_common_per_namespace`
+2. `aggregate_common`
+3. `aggregate_all_penalize_missing`
+4. `shape_aware_per_namespace`
+
+Register from a preset:
+
+```python
+system.register_weighted_strategy_preset(
+    preset_id="shape_aware_per_namespace",
+    strategy_id="X",
+)
+```
+
+List available presets:
+
+```python
+print(system.available_strategy_presets())
+```
+
+## Plugin loader
+
+Load plugin-provided feature techniques with:
+
+```python
+system.load_feature_plugin("icm.sample_feature_plugin", use_as_default=False)
+# Or by file path:
+system.load_feature_plugin("src/icm/sample_feature_plugin.py", use_as_default=False)
+```
+
+Supported plugin contracts:
+
+1. `register_feature_techniques()` returning list/set/tuple/dict values of technique objects.
+2. `FEATURE_TECHNIQUES` variable containing list/set/tuple/dict values.
 
 ## Quick start
 

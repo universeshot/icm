@@ -1,6 +1,6 @@
 {
   "id": "demo-1",
-  "created_at": "2026-02-13T01:36:02.141242+00:00",
+  "created_at": "2026-02-13T01:55:45.041872+00:00",
   "meta": {
     "purpose": "iteration baseline"
   },
@@ -18,23 +18,51 @@
       ],
       "features": {
         "directional_bias": 0.1,
+        "core.breadth": 24.0,
         "breadth": 24.0,
+        "core.depth": 1.0,
         "depth": 1.0,
-        "volume": 8.0
+        "core.volume": 8.0,
+        "volume": 8.0,
+        "shape.unique_letters": 8.0,
+        "shape.vowel_ratio": 0.25
       },
       "metadata": {},
       "scoring": {
         "feature_techniques": {
-          "breadth": "alpha_polar_breadth",
-          "depth": "letter_depth",
-          "volume": "letter_volume"
+          "core": {
+            "breadth": "alpha_polar_breadth",
+            "depth": "letter_depth",
+            "volume": "letter_volume"
+          },
+          "shape": {
+            "unique_letters": "shape_unique_letters",
+            "vowel_ratio": "shape_vowel_ratio"
+          }
         },
         "feature_values": {
-          "breadth": 24.0,
-          "depth": 1.0,
-          "volume": 8.0
+          "core": {
+            "breadth": 24.0,
+            "depth": 1.0,
+            "volume": 8.0
+          },
+          "shape": {
+            "unique_letters": 8.0,
+            "vowel_ratio": 0.25
+          }
         },
-        "metadata": {},
+        "metadata": {
+          "derived_feature_keys": [
+            "breadth",
+            "core.breadth",
+            "core.depth",
+            "core.volume",
+            "depth",
+            "shape.unique_letters",
+            "shape.vowel_ratio",
+            "volume"
+          ]
+        },
         "version": 3
       },
       "version": 1
@@ -51,23 +79,51 @@
       ],
       "features": {
         "directional_bias": 0.0,
+        "core.breadth": 15.0,
         "breadth": 15.0,
+        "core.depth": 3.0,
         "depth": 3.0,
-        "volume": 10.0
+        "core.volume": 10.0,
+        "volume": 10.0,
+        "shape.unique_letters": 6.0,
+        "shape.vowel_ratio": 0.3
       },
       "metadata": {},
       "scoring": {
         "feature_techniques": {
-          "breadth": "alpha_polar_breadth",
-          "depth": "letter_depth",
-          "volume": "letter_volume"
+          "core": {
+            "breadth": "alpha_polar_breadth",
+            "depth": "letter_depth",
+            "volume": "letter_volume"
+          },
+          "shape": {
+            "unique_letters": "shape_unique_letters",
+            "vowel_ratio": "shape_vowel_ratio"
+          }
         },
         "feature_values": {
-          "breadth": 15.0,
-          "depth": 3.0,
-          "volume": 10.0
+          "core": {
+            "breadth": 15.0,
+            "depth": 3.0,
+            "volume": 10.0
+          },
+          "shape": {
+            "unique_letters": 6.0,
+            "vowel_ratio": 0.3
+          }
         },
-        "metadata": {},
+        "metadata": {
+          "derived_feature_keys": [
+            "breadth",
+            "core.breadth",
+            "core.depth",
+            "core.volume",
+            "depth",
+            "shape.unique_letters",
+            "shape.vowel_ratio",
+            "volume"
+          ]
+        },
         "version": 3
       },
       "version": 1
@@ -84,23 +140,39 @@
       ],
       "features": {
         "directional_bias": -0.05,
+        "core.breadth": 19.0,
         "breadth": 19.0,
+        "core.depth": 5.0,
         "depth": 5.0,
+        "core.volume": 17.0,
         "volume": 17.0
       },
       "metadata": {},
       "scoring": {
         "feature_techniques": {
-          "breadth": "alpha_polar_breadth",
-          "depth": "letter_depth",
-          "volume": "letter_volume"
+          "core": {
+            "breadth": "alpha_polar_breadth",
+            "depth": "letter_depth",
+            "volume": "letter_volume"
+          }
         },
         "feature_values": {
-          "breadth": 19.0,
-          "depth": 5.0,
-          "volume": 17.0
+          "core": {
+            "breadth": 19.0,
+            "depth": 5.0,
+            "volume": 17.0
+          }
         },
-        "metadata": {},
+        "metadata": {
+          "derived_feature_keys": [
+            "breadth",
+            "core.breadth",
+            "core.depth",
+            "core.volume",
+            "depth",
+            "volume"
+          ]
+        },
         "version": 4
       },
       "version": 2
@@ -165,23 +237,34 @@
         {
           "from_cog_id": "A",
           "to_cog_id": "B",
-          "score": 0.4758333333333334,
+          "score": 0.5442592592592592,
           "vector": {
             "theme_match": 0.0,
+            "feature:core.breadth": 0.625,
+            "feature:core.depth": 0.33333333333333337,
+            "feature:core.volume": 0.8,
+            "namespace:core": 0.5861111111111111,
+            "feature:shape.unique_letters": 0.75,
+            "feature:shape.vowel_ratio": 0.95,
+            "namespace:shape": 0.85,
             "breadth_similarity": 0.625,
             "depth_similarity": 0.33333333333333337,
             "volume_similarity": 0.8,
             "directional_adjustment": 0.005000000000000001
           },
-          "variance": 0.4666666666666667,
+          "variance": 0.6166666666666666,
           "strategy_id": "X"
         },
         {
           "from_cog_id": "A",
           "to_cog_id": "C",
-          "score": 0.4126470588235294,
+          "score": 0.39743464052287586,
           "vector": {
             "theme_match": 0.0,
+            "feature:core.breadth": 0.7916666666666666,
+            "feature:core.depth": 0.19999999999999996,
+            "feature:core.volume": 0.47058823529411764,
+            "namespace:core": 0.48741830065359476,
             "breadth_similarity": 0.7916666666666666,
             "depth_similarity": 0.19999999999999996,
             "volume_similarity": 0.47058823529411764,
@@ -193,23 +276,34 @@
         {
           "from_cog_id": "B",
           "to_cog_id": "A",
-          "score": 0.4658333333333334,
+          "score": 0.5342592592592592,
           "vector": {
             "theme_match": 0.0,
+            "feature:core.breadth": 0.625,
+            "feature:core.depth": 0.33333333333333337,
+            "feature:core.volume": 0.8,
+            "namespace:core": 0.5861111111111111,
+            "feature:shape.unique_letters": 0.75,
+            "feature:shape.vowel_ratio": 0.95,
+            "namespace:shape": 0.85,
             "breadth_similarity": 0.625,
             "depth_similarity": 0.33333333333333337,
             "volume_similarity": 0.8,
             "directional_adjustment": -0.005000000000000001
           },
-          "variance": 0.4666666666666667,
+          "variance": 0.6166666666666666,
           "strategy_id": "X"
         },
         {
           "from_cog_id": "B",
           "to_cog_id": "C",
-          "score": 0.5364009287925696,
+          "score": 0.5298890608875129,
           "vector": {
             "theme_match": 0.0,
+            "feature:core.breadth": 0.7894736842105263,
+            "feature:core.depth": 0.6,
+            "feature:core.volume": 0.5882352941176471,
+            "namespace:core": 0.6592363261093911,
             "breadth_similarity": 0.7894736842105263,
             "depth_similarity": 0.6,
             "volume_similarity": 0.5882352941176471,
@@ -221,9 +315,13 @@
         {
           "from_cog_id": "C",
           "to_cog_id": "A",
-          "score": 0.3976470588235294,
+          "score": 0.38243464052287585,
           "vector": {
             "theme_match": 0.0,
+            "feature:core.breadth": 0.7916666666666666,
+            "feature:core.depth": 0.19999999999999996,
+            "feature:core.volume": 0.47058823529411764,
+            "namespace:core": 0.48741830065359476,
             "breadth_similarity": 0.7916666666666666,
             "depth_similarity": 0.19999999999999996,
             "volume_similarity": 0.47058823529411764,
@@ -235,9 +333,13 @@
         {
           "from_cog_id": "C",
           "to_cog_id": "B",
-          "score": 0.5314009287925697,
+          "score": 0.524889060887513,
           "vector": {
             "theme_match": 0.0,
+            "feature:core.breadth": 0.7894736842105263,
+            "feature:core.depth": 0.6,
+            "feature:core.volume": 0.5882352941176471,
+            "namespace:core": 0.6592363261093911,
             "breadth_similarity": 0.7894736842105263,
             "depth_similarity": 0.6,
             "volume_similarity": 0.5882352941176471,
