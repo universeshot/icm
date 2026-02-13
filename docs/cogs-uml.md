@@ -125,8 +125,9 @@ UML Object Diagram (Concrete Example)
 +----------------------+   +----------------------+   +----------------------+
 | id="A"               |   | id="B"               |   | id="C"               |
 | theme="Payments"     |   | theme="Invoicing"    |   | theme="Settlement"   |
-| scope=0.80           |   | scope=0.55           |   | scope=0.78           |
-| breadth=0.70         |   | breadth=0.40         |   | breadth=0.69         |
+| breadth=17           |   | breadth=14           |   | breadth=16           |
+| depth=2              |   | depth=3              |   | depth=2              |
+| volume=8             |   | volume=9             |   | volume=10            |
 +----------------------+   +----------------------+   +----------------------+
 
 +----------------------------------------------+

@@ -23,10 +23,21 @@ class Component:
 class Cog:
     id: str
     theme: str
-    scope: float
     breadth: float
+    depth: float
+    volume: float
+    content: str = ""
     component_ids: list[str] = field(default_factory=list)
     features: dict[str, float] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
+    scoring: "CogScoring" = field(default_factory=lambda: CogScoring())
+    version: int = 1
+
+
+@dataclass
+class CogScoring:
+    feature_techniques: dict[str, str] = field(default_factory=dict)
+    feature_values: dict[str, float] = field(default_factory=dict)
     metadata: dict[str, Any] = field(default_factory=dict)
     version: int = 1
 

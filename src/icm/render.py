@@ -25,7 +25,7 @@ class AsciiRenderer:
             marker = "B" if node.role == "base" else ("A" if node.role == "adjacent" else "L")
             lines.append(
                 f"[{marker}] Layer {node.layer:02d} | Cog {cog_id} | theme={cog.theme} "
-                f"scope={cog.scope:.3f} breadth={cog.breadth:.3f}"
+                f"breadth={cog.breadth:.3f} depth={cog.depth:.3f} volume={cog.volume:.3f}"
             )
             if show_components:
                 for component_id in cog.component_ids:

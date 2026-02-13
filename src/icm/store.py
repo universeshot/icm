@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from .models import Cog, CogGraph, Component, LineageOperation, ScoreEntry, ScoreSet, Snapshot
+from .models import Cog, CogGraph, CogScoring, Component, LineageOperation, ScoreEntry, ScoreSet, Snapshot
 
 
 class JsonSnapshotStore:
@@ -20,7 +20,7 @@ class JsonSnapshotStore:
         source = Path(path)
         raw = json.loads(source.read_text(encoding="utf-8"))
 
-        cogs = {cog_id: Cog(**data) for cog_id, data in raw["cogs"].items()}
+        cogs = {cog_id: JsonSnapshotStore._load_cog(data) for cog_id, data in raw["cogs"].items()}
         components = {cid: Component(**data) for cid, data in raw["components"].items()}
         graphs = {
             graph_id: CogGraph(
@@ -83,7 +83,16 @@ class JsonSnapshotStore:
             "id": "snapshot id",
             "created_at": "ISO-8601 UTC",
             "meta": {"version": "schema/application version", "notes": "optional"},
-            "cogs": {"cog_id": {"id": "str", "theme": "str", "scope": "float", "breadth": "float"}},
+            "cogs": {
+                "cog_id": {
+                    "id": "str",
+                    "theme": "str",
+                    "breadth": "float",
+                    "depth": "float",
+                    "volume": "float",
+                    "scoring": {"feature_techniques": {"feature": "technique_id"}, "feature_values": {}},
+                }
+            },
             "components": {"component_id": {"id": "str", "kind": "str", "payload": "dict"}},
             "graphs": {
                 "graph_id": {
@@ -112,7 +121,7 @@ class JsonSnapshotStore:
             "id": snapshot.id,
             "created_at": snapshot.created_at,
             "meta": snapshot.meta,
-            "cogs": {cog_id: vars(cog) for cog_id, cog in snapshot.cogs.items()},
+            "cogs": {cog_id: JsonSnapshotStore._serialize_cog(cog) for cog_id, cog in snapshot.cogs.items()},
             "components": {component_id: vars(component) for component_id, component in snapshot.components.items()},
             "graphs": {
                 graph_id: {
@@ -156,3 +165,52 @@ class JsonSnapshotStore:
                 for op in snapshot.lineage
             ],
         }
+
+    @staticmethod
+    def _serialize_cog(cog: Cog) -> dict[str, Any]:
+        return {
+            "id": cog.id,
+            "theme": cog.theme,
+            "breadth": cog.breadth,
+            "depth": cog.depth,
+            "volume": cog.volume,
+            "content": cog.content,
+            "component_ids": list(cog.component_ids),
+            "features": dict(cog.features),
+            "metadata": dict(cog.metadata),
+            "scoring": {
+                "feature_techniques": dict(cog.scoring.feature_techniques),
+                "feature_values": dict(cog.scoring.feature_values),
+                "metadata": dict(cog.scoring.metadata),
+                "version": cog.scoring.version,
+            },
+            "version": cog.version,
+        }
+
+    @staticmethod
+    def _load_cog(data: dict[str, Any]) -> Cog:
+        breadth = float(data.get("breadth", 0.0))
+        depth = float(data.get("depth", data.get("scope", 0.0)))
+        volume = float(data.get("volume", 0.0))
+
+        scoring_raw = data.get("scoring", {})
+        scoring = CogScoring(
+            feature_techniques=dict(scoring_raw.get("feature_techniques", {})),
+            feature_values={k: float(v) for k, v in scoring_raw.get("feature_values", {}).items()},
+            metadata=dict(scoring_raw.get("metadata", {})),
+            version=int(scoring_raw.get("version", 1)),
+        )
+
+        return Cog(
+            id=data["id"],
+            theme=data["theme"],
+            breadth=breadth,
+            depth=depth,
+            volume=volume,
+            content=data.get("content", ""),
+            component_ids=list(data.get("component_ids", [])),
+            features={k: float(v) for k, v in data.get("features", {}).items()},
+            metadata=dict(data.get("metadata", {})),
+            scoring=scoring,
+            version=int(data.get("version", 1)),
+        )

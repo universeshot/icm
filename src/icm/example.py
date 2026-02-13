@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from .iteration import IterationEngine
-from .models import Cog, CogGraph, Component
+from .models import Cog, CogGraph, CogScoring, Component
 from .policy import PathPolicy
 from .render import AsciiRenderer
 from .store import JsonSnapshotStore
@@ -13,6 +13,7 @@ from .system import CogSystem
 def build_demo_system() -> CogSystem:
     system = CogSystem()
     system.register_strategy(WeightedFeatureStrategy(id="X"))
+    system.register_default_word_feature_techniques()
 
     system.add_component(Component(id="cA1", kind="rule"))
     system.add_component(Component(id="cA2", kind="data"))
@@ -23,30 +24,57 @@ def build_demo_system() -> CogSystem:
         Cog(
             id="A",
             theme="Payments",
-            scope=0.80,
-            breadth=0.70,
+            breadth=0.0,
+            depth=0.0,
+            volume=0.0,
+            content="payments",
             component_ids=["cA1", "cA2"],
             features={"directional_bias": 0.10},
+            scoring=CogScoring(
+                feature_techniques={
+                    "breadth": "alpha_polar_breadth",
+                    "depth": "letter_depth",
+                    "volume": "letter_volume",
+                }
+            ),
         )
     )
     system.add_cog(
         Cog(
             id="B",
             theme="Settlement",
-            scope=0.78,
-            breadth=0.69,
+            breadth=0.0,
+            depth=0.0,
+            volume=0.0,
+            content="settlement",
             component_ids=["cB1"],
             features={"directional_bias": 0.00},
+            scoring=CogScoring(
+                feature_techniques={
+                    "breadth": "alpha_polar_breadth",
+                    "depth": "letter_depth",
+                    "volume": "letter_volume",
+                }
+            ),
         )
     )
     system.add_cog(
         Cog(
             id="C",
             theme="Invoicing",
-            scope=0.55,
-            breadth=0.40,
+            breadth=0.0,
+            depth=0.0,
+            volume=0.0,
+            content="invoicing",
             component_ids=["cC1"],
             features={"directional_bias": -0.05},
+            scoring=CogScoring(
+                feature_techniques={
+                    "breadth": "alpha_polar_breadth",
+                    "depth": "letter_depth",
+                    "volume": "letter_volume",
+                }
+            ),
         )
     )
 
@@ -86,8 +114,8 @@ def run_demo() -> None:
     print("Grouped neighbors:", result.grouped_neighbors)
     print()
 
-    system.update_cog("C", scope=0.79, breadth=0.71)
-    print("After updating Cog C (event-driven recompute + reorder):")
+    system.update_cog("C", content="invoicing pipeline")
+    print("After updating Cog C content (event-driven feature recompute + reorder):")
     print(renderer.render_graph("G1"))
 
     snapshot = system.snapshot(snapshot_id="demo-1", meta={"purpose": "iteration baseline"})

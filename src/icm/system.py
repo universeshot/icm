@@ -8,6 +8,12 @@ from .events import Event, EventBus
 from .index import NeighborIndex
 from .models import Cog, CogGraph, Component, LineageOperation, ScoreEntry, ScoreSet, Snapshot
 from .policy import PathPolicy
+from .scoring import (
+    AlphabetPolarBreadthTechnique,
+    FeatureTechnique,
+    LetterDepthTechnique,
+    LetterVolumeTechnique,
+)
 from .strategies import SimilarityStrategy
 
 
@@ -19,6 +25,8 @@ class CogSystem:
         self.graphs: dict[str, CogGraph] = {}
         self.score_sets: dict[str, ScoreSet] = {}
         self.strategies: dict[str, SimilarityStrategy] = {}
+        self.feature_techniques: dict[str, FeatureTechnique] = {}
+        self.default_feature_techniques: dict[str, str] = {}
         self.graph_policies: dict[str, PathPolicy] = {}
         self._neighbor_indexes: dict[tuple[str, str], NeighborIndex] = {}
         self.lineage: list[LineageOperation] = []
@@ -28,11 +36,46 @@ class CogSystem:
     def register_strategy(self, strategy: SimilarityStrategy) -> None:
         self.strategies[strategy.id] = strategy
 
+    def register_feature_technique(self, technique: FeatureTechnique, use_as_default: bool = True) -> None:
+        self.feature_techniques[technique.id] = technique
+        if use_as_default:
+            self.default_feature_techniques[technique.feature_name] = technique.id
+
+    def register_default_word_feature_techniques(self) -> None:
+        self.register_feature_technique(AlphabetPolarBreadthTechnique())
+        self.register_feature_technique(LetterDepthTechnique())
+        self.register_feature_technique(LetterVolumeTechnique())
+
+    def recompute_cog_features(self, cog_id: str) -> Cog:
+        cog = self.cogs[cog_id]
+        technique_map = dict(cog.scoring.feature_techniques)
+        for feature_name, technique_id in self.default_feature_techniques.items():
+            technique_map.setdefault(feature_name, technique_id)
+
+        for feature_name, technique_id in technique_map.items():
+            technique = self.feature_techniques.get(technique_id)
+            if technique is None:
+                raise ValueError(f"Unknown feature technique: {technique_id}")
+            value = float(technique.calculate(cog))
+            cog.scoring.feature_values[feature_name] = value
+            cog.features[feature_name] = value
+            if feature_name == "breadth":
+                cog.breadth = value
+            elif feature_name == "depth":
+                cog.depth = value
+            elif feature_name == "volume":
+                cog.volume = value
+
+        cog.scoring.feature_techniques = technique_map
+        cog.scoring.version += 1
+        return cog
+
     def add_component(self, component: Component) -> None:
         self.components[component.id] = component
 
     def add_cog(self, cog: Cog) -> None:
         self.cogs[cog.id] = cog
+        self.recompute_cog_features(cog.id)
         self.event_bus.publish(Event(topic="cog.updated", payload={"cog_id": cog.id}))
 
     def update_cog(self, cog_id: str, **updates: Any) -> Cog:
@@ -41,6 +84,7 @@ class CogSystem:
             if not hasattr(cog, key):
                 raise ValueError(f"Unsupported cog field: {key}")
             setattr(cog, key, value)
+        self.recompute_cog_features(cog_id)
         cog.version += 1
         self.event_bus.publish(
             Event(topic="cog.updated", payload={"cog_id": cog.id, "version": cog.version})
@@ -73,6 +117,8 @@ class CogSystem:
 
         strategy = self.strategies[strategy_id]
         ids = cog_ids if cog_ids is not None else list(self.cogs.keys())
+        for cog_id in ids:
+            self.recompute_cog_features(cog_id)
         score_set = ScoreSet(id=score_set_id, strategy_id=strategy_id, context_hash=context_hash)
 
         for from_cog_id in ids:

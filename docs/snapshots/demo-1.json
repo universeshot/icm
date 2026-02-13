@@ -1,6 +1,6 @@
 {
   "id": "demo-1",
-  "created_at": "2026-02-13T01:18:11.378501+00:00",
+  "created_at": "2026-02-13T01:36:02.141242+00:00",
   "meta": {
     "purpose": "iteration baseline"
   },
@@ -8,44 +8,101 @@
     "A": {
       "id": "A",
       "theme": "Payments",
-      "scope": 0.8,
-      "breadth": 0.7,
+      "breadth": 24.0,
+      "depth": 1.0,
+      "volume": 8.0,
+      "content": "payments",
       "component_ids": [
         "cA1",
         "cA2"
       ],
       "features": {
-        "directional_bias": 0.1
+        "directional_bias": 0.1,
+        "breadth": 24.0,
+        "depth": 1.0,
+        "volume": 8.0
       },
       "metadata": {},
+      "scoring": {
+        "feature_techniques": {
+          "breadth": "alpha_polar_breadth",
+          "depth": "letter_depth",
+          "volume": "letter_volume"
+        },
+        "feature_values": {
+          "breadth": 24.0,
+          "depth": 1.0,
+          "volume": 8.0
+        },
+        "metadata": {},
+        "version": 3
+      },
       "version": 1
     },
     "B": {
       "id": "B",
       "theme": "Settlement",
-      "scope": 0.78,
-      "breadth": 0.69,
+      "breadth": 15.0,
+      "depth": 3.0,
+      "volume": 10.0,
+      "content": "settlement",
       "component_ids": [
         "cB1"
       ],
       "features": {
-        "directional_bias": 0.0
+        "directional_bias": 0.0,
+        "breadth": 15.0,
+        "depth": 3.0,
+        "volume": 10.0
       },
       "metadata": {},
+      "scoring": {
+        "feature_techniques": {
+          "breadth": "alpha_polar_breadth",
+          "depth": "letter_depth",
+          "volume": "letter_volume"
+        },
+        "feature_values": {
+          "breadth": 15.0,
+          "depth": 3.0,
+          "volume": 10.0
+        },
+        "metadata": {},
+        "version": 3
+      },
       "version": 1
     },
     "C": {
       "id": "C",
       "theme": "Invoicing",
-      "scope": 0.79,
-      "breadth": 0.71,
+      "breadth": 19.0,
+      "depth": 5.0,
+      "volume": 17.0,
+      "content": "invoicing pipeline",
       "component_ids": [
         "cC1"
       ],
       "features": {
-        "directional_bias": -0.05
+        "directional_bias": -0.05,
+        "breadth": 19.0,
+        "depth": 5.0,
+        "volume": 17.0
       },
       "metadata": {},
+      "scoring": {
+        "feature_techniques": {
+          "breadth": "alpha_polar_breadth",
+          "depth": "letter_depth",
+          "volume": "letter_volume"
+        },
+        "feature_values": {
+          "breadth": 19.0,
+          "depth": 5.0,
+          "volume": 17.0
+        },
+        "metadata": {},
+        "version": 4
+      },
       "version": 2
     }
   },
@@ -108,79 +165,85 @@
         {
           "from_cog_id": "A",
           "to_cog_id": "B",
-          "score": 0.6449999999999999,
+          "score": 0.4758333333333334,
           "vector": {
             "theme_match": 0.0,
-            "scope_similarity": 0.98,
-            "breadth_similarity": 0.99,
+            "breadth_similarity": 0.625,
+            "depth_similarity": 0.33333333333333337,
+            "volume_similarity": 0.8,
             "directional_adjustment": 0.005000000000000001
           },
-          "variance": 0.010000000000000009,
+          "variance": 0.4666666666666667,
           "strategy_id": "X"
         },
         {
           "from_cog_id": "A",
           "to_cog_id": "C",
-          "score": 0.6509999999999999,
+          "score": 0.4126470588235294,
           "vector": {
             "theme_match": 0.0,
-            "scope_similarity": 0.99,
-            "breadth_similarity": 0.99,
+            "breadth_similarity": 0.7916666666666666,
+            "depth_similarity": 0.19999999999999996,
+            "volume_similarity": 0.47058823529411764,
             "directional_adjustment": 0.0075000000000000015
           },
-          "variance": 0.0,
+          "variance": 0.5916666666666667,
           "strategy_id": "X"
         },
         {
           "from_cog_id": "B",
           "to_cog_id": "A",
-          "score": 0.6349999999999999,
+          "score": 0.4658333333333334,
           "vector": {
             "theme_match": 0.0,
-            "scope_similarity": 0.98,
-            "breadth_similarity": 0.99,
+            "breadth_similarity": 0.625,
+            "depth_similarity": 0.33333333333333337,
+            "volume_similarity": 0.8,
             "directional_adjustment": -0.005000000000000001
           },
-          "variance": 0.010000000000000009,
+          "variance": 0.4666666666666667,
           "strategy_id": "X"
         },
         {
           "from_cog_id": "B",
           "to_cog_id": "C",
-          "score": 0.6429999999999999,
+          "score": 0.5364009287925696,
           "vector": {
             "theme_match": 0.0,
-            "scope_similarity": 0.99,
-            "breadth_similarity": 0.98,
+            "breadth_similarity": 0.7894736842105263,
+            "depth_similarity": 0.6,
+            "volume_similarity": 0.5882352941176471,
             "directional_adjustment": 0.0025000000000000005
           },
-          "variance": 0.010000000000000009,
+          "variance": 0.20123839009287925,
           "strategy_id": "X"
         },
         {
           "from_cog_id": "C",
           "to_cog_id": "A",
-          "score": 0.636,
+          "score": 0.3976470588235294,
           "vector": {
             "theme_match": 0.0,
-            "scope_similarity": 0.99,
-            "breadth_similarity": 0.99,
+            "breadth_similarity": 0.7916666666666666,
+            "depth_similarity": 0.19999999999999996,
+            "volume_similarity": 0.47058823529411764,
             "directional_adjustment": -0.0075000000000000015
           },
-          "variance": 0.0,
+          "variance": 0.5916666666666667,
           "strategy_id": "X"
         },
         {
           "from_cog_id": "C",
           "to_cog_id": "B",
-          "score": 0.638,
+          "score": 0.5314009287925697,
           "vector": {
             "theme_match": 0.0,
-            "scope_similarity": 0.99,
-            "breadth_similarity": 0.98,
+            "breadth_similarity": 0.7894736842105263,
+            "depth_similarity": 0.6,
+            "volume_similarity": 0.5882352941176471,
             "directional_adjustment": -0.0025000000000000005
           },
-          "variance": 0.010000000000000009,
+          "variance": 0.20123839009287925,
           "strategy_id": "X"
         }
       ]

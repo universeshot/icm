@@ -3,9 +3,10 @@
 Phase 1 focuses on:
 
 1. Extendable data structure (`Cog`, `Component`, `CogGraph`, `ScoreSet`).
-2. Event/subscription-based score recomputation.
-3. Manual and automated iteration mechanics.
-4. ASCII rendering and JSON snapshot persistence.
+2. Pluggable per-cog feature scoring (`breadth`, `depth`, `volume`, and future features).
+3. Event/subscription-based score recomputation.
+4. Manual and automated iteration mechanics.
+5. ASCII rendering and JSON snapshot persistence.
 
 Phase 1 intentionally does not implement automatic composition/decomposition yet.
 
@@ -14,6 +15,7 @@ Phase 1 intentionally does not implement automatic composition/decomposition yet
 - `src/icm/models.py`: core entities and snapshots.
 - `src/icm/events.py`: event bus.
 - `src/icm/strategies.py`: pluggable similarity strategies.
+- `src/icm/scoring.py`: pluggable per-feature calculation techniques.
 - `src/icm/system.py`: orchestration, score-set lifecycle, policy binding.
 - `src/icm/index.py`: pre-sorted neighbor index for traversal.
 - `src/icm/policy.py`: deterministic path policy.
@@ -41,8 +43,9 @@ Automated:
 `CogSystem` subscribes to `cog.updated` and `scores.updated`:
 
 1. Cog update recomputes affected score rows/columns for every compatible score set.
-2. Score-set update invalidates cached neighbor indexes.
-3. If a graph is bound to a policy via `bind_graph_policy`, score updates auto-trigger graph reorder.
+2. Cog update recomputes feature values from configured per-cog techniques.
+3. Score-set update invalidates cached neighbor indexes.
+4. If a graph is bound to a policy via `bind_graph_policy`, score updates auto-trigger graph reorder.
 
 ## Quick start
 
