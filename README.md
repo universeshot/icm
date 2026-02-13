@@ -30,3 +30,12 @@ In fields where the terminology has been appropriately stacked, the same base le
 This Ice Cream Machine facilitates digital equivalents of [rotor machines](https://en.wikipedia.org/wiki/Rotor_machine) (which are used in the [TypeX](https://en.wikipedia.org/wiki/Typex) and [Enigma machine](https://en.wikipedia.org/wiki/Enigma_machine)).
 
 As well, this enables an explosion of every day technical work into a number of different real world applications (akin to the performance of the [Bomba](https://en.wikipedia.org/wiki/Bomba_(cryptography))). 
+
+## Current implementation status
+
+The repository now includes a first-pass cogs runtime focused on data structures and iteration:
+
+1. UML archive: `docs/cogs-uml.md`
+2. Phase-1 implementation notes: `docs/cogs-system.md`
+3. Python package: `src/icm/`
+4. Runnable sample: `src/icm/example.py`

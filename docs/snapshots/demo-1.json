@@ -1,0 +1,223 @@
+{
+  "id": "demo-1",
+  "created_at": "2026-02-13T01:18:11.378501+00:00",
+  "meta": {
+    "purpose": "iteration baseline"
+  },
+  "cogs": {
+    "A": {
+      "id": "A",
+      "theme": "Payments",
+      "scope": 0.8,
+      "breadth": 0.7,
+      "component_ids": [
+        "cA1",
+        "cA2"
+      ],
+      "features": {
+        "directional_bias": 0.1
+      },
+      "metadata": {},
+      "version": 1
+    },
+    "B": {
+      "id": "B",
+      "theme": "Settlement",
+      "scope": 0.78,
+      "breadth": 0.69,
+      "component_ids": [
+        "cB1"
+      ],
+      "features": {
+        "directional_bias": 0.0
+      },
+      "metadata": {},
+      "version": 1
+    },
+    "C": {
+      "id": "C",
+      "theme": "Invoicing",
+      "scope": 0.79,
+      "breadth": 0.71,
+      "component_ids": [
+        "cC1"
+      ],
+      "features": {
+        "directional_bias": -0.05
+      },
+      "metadata": {},
+      "version": 2
+    }
+  },
+  "components": {
+    "cA1": {
+      "id": "cA1",
+      "kind": "rule",
+      "payload": {},
+      "feature_values": {},
+      "metadata": {},
+      "version": 1
+    },
+    "cA2": {
+      "id": "cA2",
+      "kind": "data",
+      "payload": {},
+      "feature_values": {},
+      "metadata": {},
+      "version": 1
+    },
+    "cB1": {
+      "id": "cB1",
+      "kind": "model",
+      "payload": {},
+      "feature_values": {},
+      "metadata": {},
+      "version": 1
+    },
+    "cC1": {
+      "id": "cC1",
+      "kind": "rule",
+      "payload": {},
+      "feature_values": {},
+      "metadata": {},
+      "version": 1
+    }
+  },
+  "graphs": {
+    "G1": {
+      "id": "G1",
+      "base_cog_id": "A",
+      "adjacent_order": [
+        "B"
+      ],
+      "layered_order": [
+        "C"
+      ],
+      "hidden_layers": [],
+      "context_hash": "default",
+      "version": 3
+    }
+  },
+  "score_sets": {
+    "SS-X": {
+      "id": "SS-X",
+      "strategy_id": "X",
+      "context_hash": "default",
+      "version": 2,
+      "entries": [
+        {
+          "from_cog_id": "A",
+          "to_cog_id": "B",
+          "score": 0.6449999999999999,
+          "vector": {
+            "theme_match": 0.0,
+            "scope_similarity": 0.98,
+            "breadth_similarity": 0.99,
+            "directional_adjustment": 0.005000000000000001
+          },
+          "variance": 0.010000000000000009,
+          "strategy_id": "X"
+        },
+        {
+          "from_cog_id": "A",
+          "to_cog_id": "C",
+          "score": 0.6509999999999999,
+          "vector": {
+            "theme_match": 0.0,
+            "scope_similarity": 0.99,
+            "breadth_similarity": 0.99,
+            "directional_adjustment": 0.0075000000000000015
+          },
+          "variance": 0.0,
+          "strategy_id": "X"
+        },
+        {
+          "from_cog_id": "B",
+          "to_cog_id": "A",
+          "score": 0.6349999999999999,
+          "vector": {
+            "theme_match": 0.0,
+            "scope_similarity": 0.98,
+            "breadth_similarity": 0.99,
+            "directional_adjustment": -0.005000000000000001
+          },
+          "variance": 0.010000000000000009,
+          "strategy_id": "X"
+        },
+        {
+          "from_cog_id": "B",
+          "to_cog_id": "C",
+          "score": 0.6429999999999999,
+          "vector": {
+            "theme_match": 0.0,
+            "scope_similarity": 0.99,
+            "breadth_similarity": 0.98,
+            "directional_adjustment": 0.0025000000000000005
+          },
+          "variance": 0.010000000000000009,
+          "strategy_id": "X"
+        },
+        {
+          "from_cog_id": "C",
+          "to_cog_id": "A",
+          "score": 0.636,
+          "vector": {
+            "theme_match": 0.0,
+            "scope_similarity": 0.99,
+            "breadth_similarity": 0.99,
+            "directional_adjustment": -0.0075000000000000015
+          },
+          "variance": 0.0,
+          "strategy_id": "X"
+        },
+        {
+          "from_cog_id": "C",
+          "to_cog_id": "B",
+          "score": 0.638,
+          "vector": {
+            "theme_match": 0.0,
+            "scope_similarity": 0.99,
+            "breadth_similarity": 0.98,
+            "directional_adjustment": -0.0025000000000000005
+          },
+          "variance": 0.010000000000000009,
+          "strategy_id": "X"
+        }
+      ]
+    }
+  },
+  "lineage": [
+    {
+      "op_type": "reorder",
+      "inputs": [
+        "A"
+      ],
+      "outputs": [
+        "A",
+        "B",
+        "C"
+      ],
+      "metadata": {
+        "graph_id": "G1",
+        "score_set_id": "SS-X",
+        "direction_mode": "directed"
+      }
+    },
+    {
+      "op_type": "reorder",
+      "inputs": [
+        "A"
+      ],
+      "outputs": [
+        "A",
+        "B",
+        "C"
+      ],
+      "metadata": {
+        "graph_id": "G1",
+        "score_set_id": "SS-X",
+        "direction_mode": "directed"
+      }
+    }
+  ]
+}
