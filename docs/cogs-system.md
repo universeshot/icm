@@ -14,19 +14,11 @@ Phase 1 intentionally does not implement automatic composition/decomposition yet
 
 ## Module map
 
-- `src/icm/models.py`: core entities and snapshots.
-- `src/icm/events.py`: event bus.
-- `src/icm/strategies.py`: pluggable similarity strategies.
-- `src/icm/scoring.py`: pluggable per-feature calculation techniques.
-- `src/icm/plugins.py`: simple plugin loader for feature techniques.
-- `src/icm/sample_feature_plugin.py`: example plugin module.
-- `src/icm/system.py`: orchestration, score-set lifecycle, policy binding.
-- `src/icm/index.py`: pre-sorted neighbor index for traversal.
-- `src/icm/policy.py`: deterministic path policy.
-- `src/icm/iteration.py`: manual and automated iteration engine.
-- `src/icm/render.py`: ASCII visual representation.
-- `src/icm/store.py`: JSON snapshot store.
+- `src/icm/core/`: core data/runtime modules (`models`, `events`, `system`, `iteration`, `store`, etc.).
+- `src/icm/scoring/`: feature techniques, strategy logic, presets, and plugin loading.
+- `src/icm/interfaces/`: MCP server integration and interface-layer runtime helpers.
 - `src/icm/example.py`: concrete runnable sample.
+- `docs/icm-mcp.md`: MCP tool reference and isolation model.
 
 ## Iteration capabilities
 
@@ -94,9 +86,9 @@ print(system.available_strategy_presets())
 Load plugin-provided feature techniques with:
 
 ```python
-system.load_feature_plugin("icm.sample_feature_plugin", use_as_default=False)
+system.load_feature_plugin("icm.scoring.sample_feature_plugin", use_as_default=False)
 # Or by file path:
-system.load_feature_plugin("src/icm/sample_feature_plugin.py", use_as_default=False)
+system.load_feature_plugin("src/icm/scoring/sample_feature_plugin.py", use_as_default=False)
 ```
 
 Supported plugin contracts:

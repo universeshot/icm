@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Literal, Protocol
 
-from .models import Cog, ScoreEntry
+from ..core.models import Cog, ScoreEntry
 
 
 class SimilarityStrategy(Protocol):

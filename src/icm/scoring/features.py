@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Callable, Protocol
 
-from .models import Cog
+from ..core.models import Cog
 
 
 def _letters_only(text: str) -> list[str]:

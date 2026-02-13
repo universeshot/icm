@@ -7,16 +7,16 @@ from typing import Any
 from .events import Event, EventBus
 from .index import NeighborIndex
 from .models import Cog, CogGraph, Component, LineageOperation, ScoreEntry, ScoreSet, Snapshot
-from .presets import build_weighted_strategy_from_preset, list_weighted_strategy_presets
 from .policy import PathPolicy
-from .plugins import load_feature_techniques
-from .scoring import (
+from ..scoring.features import (
     AlphabetPolarBreadthTechnique,
     FeatureTechnique,
     LetterDepthTechnique,
     LetterVolumeTechnique,
 )
-from .strategies import SimilarityStrategy
+from ..scoring.plugins import load_feature_techniques
+from ..scoring.presets import build_weighted_strategy_from_preset, list_weighted_strategy_presets
+from ..scoring.strategies import SimilarityStrategy
 
 
 class CogSystem:
@@ -328,6 +328,16 @@ class CogSystem:
             score_sets=deepcopy(self.score_sets),
             lineage=deepcopy(self.lineage),
         )
+
+    def load_snapshot(self, snapshot: Snapshot, reset_policies: bool = True) -> None:
+        self.cogs = deepcopy(snapshot.cogs)
+        self.components = deepcopy(snapshot.components)
+        self.graphs = deepcopy(snapshot.graphs)
+        self.score_sets = deepcopy(snapshot.score_sets)
+        self.lineage = deepcopy(snapshot.lineage)
+        self._neighbor_indexes.clear()
+        if reset_policies:
+            self.graph_policies = {}
 
     @staticmethod
     def snapshot_to_dict(snapshot: Snapshot) -> dict[str, Any]:

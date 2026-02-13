@@ -8,7 +8,7 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any, Iterable
 
-from .scoring import FeatureTechnique
+from .features import FeatureTechnique
 
 
 def _is_technique(obj: Any) -> bool:

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-from .iteration import IterationEngine
-from .models import Cog, CogGraph, CogScoring, Component
-from .policy import PathPolicy
-from .render import AsciiRenderer
-from .store import JsonSnapshotStore
-from .system import CogSystem
+from .core.iteration import IterationEngine
+from .core.models import Cog, CogGraph, CogScoring, Component
+from .core.policy import PathPolicy
+from .core.render import AsciiRenderer
+from .core.store import JsonSnapshotStore
+from .core.system import CogSystem
 
 
 def build_demo_system() -> CogSystem:
@@ -16,7 +16,7 @@ def build_demo_system() -> CogSystem:
         strategy_id="X",
     )
     system.register_default_word_feature_techniques()
-    system.load_feature_plugin("icm.sample_feature_plugin", use_as_default=False)
+    system.load_feature_plugin("icm.scoring.sample_feature_plugin", use_as_default=False)
 
     system.add_component(Component(id="cA1", kind="rule"))
     system.add_component(Component(id="cA2", kind="data"))

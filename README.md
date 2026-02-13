@@ -37,5 +37,9 @@ The repository now includes a first-pass cogs runtime focused on data structures
 
 1. UML archive: `docs/cogs-uml.md`
 2. Phase-1 implementation notes: `docs/cogs-system.md`
-3. Python package: `src/icm/`
+3. Python package: `src/icm/` with grouped modules in:
+   - `src/icm/core/`
+   - `src/icm/scoring/`
+   - `src/icm/interfaces/`
 4. Runnable sample: `src/icm/example.py`
+5. MCP interface and isolation notes: `docs/icm-mcp.md`
